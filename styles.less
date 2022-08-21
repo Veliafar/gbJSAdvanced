@@ -29,22 +29,39 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  .logo {
+    //background-color: @color-lvl-2;
+    padding: @offset-sm;
+    color: @accent;
+    font-weight: bold;
+    border-radius: @offset;
+    font-size: 24px;
+    text-shadow: black 1px 1px 1px;
+  }
+
+  .cart-button {
+    display: flex;
+    padding: @offset-sm;
+    align-items: center;
+    border-radius: @offset;
+    cursor: pointer;
+    border: 0;
+    background-color: @accent;
+    color: white;
+    text-shadow: black 1px 1px 1px;
+
+    &:hover {
+      background-color: @accent-hover;
+    }
+    &:active {
+      background-color: @accent-active;
+    }
+  }
 }
 
 .main {
   padding: @offset-md;
-}
-
-.cart-button {
-  display: flex;
-  padding: @offset-sm;
-  align-items: center;
-  border-radius: @offset;
-  cursor: pointer;
-  border: 0;
-  background-color: @accent;
-  color: white;
-  text-shadow: black 1px 1px 1px;
 }
 
 .goods-list {

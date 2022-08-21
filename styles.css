@@ -21,10 +21,15 @@ html {
   align-items: center;
   justify-content: space-between;
 }
-.main {
-  padding: calc(4px * 4);
+.header .logo {
+  padding: calc(4px * 2);
+  color: limegreen;
+  font-weight: bold;
+  border-radius: 4px;
+  font-size: 24px;
+  text-shadow: black 1px 1px 1px;
 }
-.cart-button {
+.header .cart-button {
   display: flex;
   padding: calc(4px * 2);
   align-items: center;
@@ -34,6 +39,15 @@ html {
   background-color: limegreen;
   color: white;
   text-shadow: black 1px 1px 1px;
+}
+.header .cart-button:hover {
+  background-color: #3CD73C;
+}
+.header .cart-button:active {
+  background-color: #14AF14;
+}
+.main {
+  padding: calc(4px * 4);
 }
 .goods-list {
   display: flex;

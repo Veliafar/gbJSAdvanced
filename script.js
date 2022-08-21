@@ -70,3 +70,36 @@ console.log(`Общая сумма товаров %c${productList.mathProductsPr
 
 
 
+class Cart {
+
+  constructor(cartItems) {
+    this.cartItems = [];
+    this.total = 0;
+  }
+
+
+  mathTotal() {
+    this.total = this.cartItems
+      .reduce((total, item) => total += item.price, 0);
+  }
+
+  addItem(item) {
+    this.cartItems.push(item);
+  }
+
+  removeItem(id) {
+    this.cartItems.splice(
+      this.cartItems.findIndex(item => item.id === id),
+      1
+    );
+  }
+}
+
+class CartItem extends ProductItem {
+
+  constructor() {
+    super();
+  }
+
+}
+
