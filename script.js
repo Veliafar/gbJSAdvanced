@@ -32,9 +32,19 @@ class ProductList {
   }
 }
 
-
-class ProductItem {
+class ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/218x204') {
+    this.title = item.title;
+    this.id = item.id;
+    this.price = item.price;
+    this.img = item.img || img;
+  }
+}
+
+
+class ProductItem extends ProductItemBase {
+  constructor(item, img = 'https://via.placeholder.com/218x204') {
+    super();
     this.title = item.title;
     this.id = item.id;
     this.price = item.price;
@@ -71,35 +81,22 @@ console.log(`Общая сумма товаров %c${productList.mathProductsPr
 
 
 class Cart {
-
-  constructor(cartItems) {
-    this.cartItems = [];
-    this.total = 0;
+  constructor() {
   }
-
 
   mathTotal() {
-    this.total = this.cartItems
-      .reduce((total, item) => total += item.price, 0);
   }
-
   addItem(item) {
-    this.cartItems.push(item);
   }
-
   removeItem(id) {
-    this.cartItems.splice(
-      this.cartItems.findIndex(item => item.id === id),
-      1
-    );
+  }
+  changeItem() {
   }
 }
 
-class CartItem extends ProductItem {
-
+class CartItem extends ProductItemBase {
   constructor() {
     super();
   }
-
 }
 
