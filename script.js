@@ -1,21 +1,26 @@
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/';
+
 
 class ProductList {
-  constructor(container='.goods-list') {
+  constructor(container = '.goods-list') {
     this.container = container;
-    this.goods = [];
-    this._fetchProducts();
-    this.render();
+
+    this._fetchProducts()
+      .then((data) => {
+        console.log('data', data);
+        this.goods = data;
+        this.render();
+        console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
+      });
   }
 
 
   _fetchProducts() {
-    this.goods = [
-      {title: 'Shirt', price: 150},
-      {title: 'Socks', price: 50},
-      {title: 'Jacket', price: 350},
-      {title: 'Shoes', price: 250},
-      {title: 'T-shirt', price: 300},
-    ];
+    return fetch(`${API_URL}catalogData.json`)
+      .then((json) => json.json())
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   render() {
@@ -27,35 +32,34 @@ class ProductList {
   }
 
   mathProductsPriceSum() {
-    return this.goods
-      .reduce((total, item) => total += item.price, 0);
+    return this.goods?.length
+      ? this.goods
+        .reduce((total, item) => total += item.price, 0)
+      : 'Товаров нет'
+      ;
   }
 }
 
 class ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/218x204') {
-    this.title = item.title;
-    this.id = item.id;
-    this.price = item.price;
-    this.img = item.img || img;
+    this.product_name = item?.product_name;
+    this.id_product = item?.id_product;
+    this.price = item?.price;
+    this.img = item?.img || img;
   }
 }
 
 
 class ProductItem extends ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/218x204') {
-    super();
-    this.title = item.title;
-    this.id = item.id;
-    this.price = item.price;
-    this.img = item.img || img;
+    super(item, img);
   }
 
   buildHtml() {
     const productHTML = document.createElement("div");
     productHTML.classList.add("goods-item");
     productHTML.innerHTML = `
-      <h3 class="goods-item__header">${this.title}</h3>
+      <h3 class="goods-item__header">${this.product_name}</h3>
       <div class="goods-item__info">
         <p class="goods-item__info__price">
           ${this.price} $
@@ -76,8 +80,6 @@ class ProductItem extends ProductItemBase {
 }
 
 const productList = new ProductList();
-console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
-
 
 
 class Cart {
@@ -86,10 +88,13 @@ class Cart {
 
   mathTotal() {
   }
+
   addItem(item) {
   }
+
   removeItem(id) {
   }
+
   changeItem() {
   }
 }
