@@ -29,6 +29,9 @@ html {
   font-size: 24px;
   text-shadow: black 1px 1px 1px;
 }
+.header .cart {
+  position: relative;
+}
 .header .cart-button {
   display: flex;
   padding: calc(4px * 2);
@@ -45,6 +48,30 @@ html {
 }
 .header .cart-button:active {
   background-color: #14AF14;
+}
+.header .cart-modal {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  padding: calc(4px * 4);
+  width: 340px;
+  min-height: 200px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 4px 13px 30px 3px rgba(34, 60, 80, 0.2);
+}
+.header .cart-modal--hidden {
+  display: none;
+}
+.header .cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header .cart-item__info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 .main {
   padding: calc(4px * 4);
