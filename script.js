@@ -112,6 +112,32 @@ class Cart {
       });
   }
 
+  static _onCartButtonCLick() {
+    const element = document.querySelector('.cart-modal');
+
+    function hideOnClickOutside(element) {
+      const outsideClickListener = event => {
+        if (!element.contains(event.target)) { // or use: event.target.closest(selector) === null
+          element.classList.add('cart-modal--hidden');
+          removeClickListener();
+        }
+      }
+      const removeClickListener = () => {
+        document.removeEventListener('click', outsideClickListener);
+      }
+      document.addEventListener('click', outsideClickListener);
+    }
+
+    if (element.classList.contains('cart-modal--hidden')) {
+      element.classList.remove('cart-modal--hidden');
+      setTimeout(( ) => {
+        hideOnClickOutside(element);
+      }, 200);
+    } else if (!element.classList.contains('cart-modal--hidden')) {
+      element.classList.add('cart-modal--hidden');
+    }
+  }
+
   mathTotalSum() {
   }
 
@@ -152,9 +178,12 @@ class CartItem extends ProductItemBase {
           ${this.price} $
         </p>
         <div>
+          <button style="font-weight: bold"> - </button>
           ${this.quantity} шт.
+          <button style="font-weight: bold"> + </button>
         </div>
-      </div>            
+      </div>       
+           
     `;
     return productHTML;
   }
