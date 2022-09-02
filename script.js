@@ -17,13 +17,11 @@ class ProductList extends ListItemBase {
   constructor(cart, container = '.goods-list') {
     super(container);
     this.cart = cart;
-    console.log('cart', this.cart);
   }
 
   onInit(callback) {
     this._fetchProducts()
       .then((data) => {
-        console.log('products', data);
         this.itemList = data;
         this.render();
 
@@ -35,7 +33,7 @@ class ProductList extends ListItemBase {
     return fetch(`${API_URL}/catalogData.json`)
       .then((json) => json.json())
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -110,7 +108,6 @@ class Cart extends ListItemBase {
 
     this._fetchCartItems()
       .then((data) => {
-        console.log('itemList', data);
         this.totalSum = data?.amount;
         this.totalQuantity = data?.countGoods;
         this.itemList = data?.contents;
@@ -123,7 +120,7 @@ class Cart extends ListItemBase {
     return fetch(`${API_URL}/getBasket.json`)
       .then((json) => json.json())
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -132,7 +129,6 @@ class Cart extends ListItemBase {
 
     function hideOnClickOutside(element) {
       const outsideClickListener = event => {
-        console.log('event.target', event.target);
         if (!event.target.closest('.cart-modal')
           && !event.target.classList.contains('goods-item__control__button')
           && !event.target.classList.contains('price-control__button')) {
