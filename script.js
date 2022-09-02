@@ -1,22 +1,33 @@
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+
 
 class ProductList {
-  constructor(container='.goods-list') {
+  constructor(container = '.goods-list') {
     this.container = container;
     this.goods = [];
-    this._fetchProducts();
-    this.render();
+
+
   }
 
+  onInit(callback) {
+    this._fetchProducts()
+      .then((data) => {
+        console.log('products', data);
+        this.goods = data;
+        this.render();
+
+        callback.bind(this)();
+      });
+  }
 
   _fetchProducts() {
-    this.goods = [
-      {title: 'Shirt', price: 150},
-      {title: 'Socks', price: 50},
-      {title: 'Jacket', price: 350},
-      {title: 'Shoes', price: 250},
-      {title: 'T-shirt', price: 300},
-    ];
+    return fetch(`${API_URL}/catalogData.json`)
+      .then((json) => json.json())
+      .catch((err) => {
+        console.log(err);
+      });
   }
+
 
   render() {
     const block = document.querySelector(this.container);
@@ -27,35 +38,34 @@ class ProductList {
   }
 
   mathProductsPriceSum() {
-    return this.goods
-      .reduce((total, item) => total += item.price, 0);
+    return this.goods?.length
+      ? this.goods
+        .reduce((total, item) => total += item.price, 0)
+      : 'Товаров нет'
+      ;
   }
 }
 
 class ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/218x204') {
-    this.title = item.title;
-    this.id = item.id;
-    this.price = item.price;
-    this.img = item.img || img;
+    this.product_name = item?.product_name;
+    this.id_product = item?.id_product;
+    this.price = item?.price;
+    this.img = item?.img || img;
   }
 }
 
 
 class ProductItem extends ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/218x204') {
-    super();
-    this.title = item.title;
-    this.id = item.id;
-    this.price = item.price;
-    this.img = item.img || img;
+    super(item, img);
   }
 
   buildHtml() {
     const productHTML = document.createElement("div");
     productHTML.classList.add("goods-item");
     productHTML.innerHTML = `
-      <h3 class="goods-item__header">${this.title}</h3>
+      <h3 class="goods-item__header">${this.product_name}</h3>
       <div class="goods-item__info">
         <p class="goods-item__info__price">
           ${this.price} $
@@ -75,28 +85,78 @@ class ProductItem extends ProductItemBase {
   }
 }
 
-const productList = new ProductList();
-console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
-
-
 
 class Cart {
-  constructor() {
+  constructor(container = '.cart-modal') {
+    this.container = container;
+    this.cartData = [];
+    this.totalSum = 0;
+    this.totalQuantity = 0;
+
+    this._fetchCartItems()
+      .then((data) => {
+        console.log('cartData', data);
+        this.totalSum = data?.amount;
+        this.totalQuantity = data?.countGoods;
+        this.cartData = data?.contents;
+
+        this.render();
+      });
   }
 
-  mathTotal() {
+  _fetchCartItems() {
+    return fetch(`${API_URL}/getBasket.json`)
+      .then((json) => json.json())
+      .catch((err) => {
+        console.log(err);
+      });
   }
+
+  mathTotalSum() {
+  }
+
   addItem(item) {
   }
+
   removeItem(id) {
   }
+
   changeItem() {
+  }
+
+  render() {
+    const block = document.querySelector(this.container);
+    for (let product of this.cartData) {
+      const item = new CartItem(product);
+      block.insertAdjacentElement("beforeend", item.buildHtml());
+    }
   }
 }
 
 class CartItem extends ProductItemBase {
-  constructor() {
-    super();
+  constructor(item, img = 'https://via.placeholder.com/40x40') {
+    super(item, img);
+    this.quantity = item?.quantity;
+  }
+
+  buildHtml() {
+    const productHTML = document.createElement("div");
+    productHTML.classList.add("cart-item");
+    productHTML.innerHTML = `
+      <div class="cart-item__image-wrapper">
+        <img class="cart-item__image-wrapper__image" src="${this.img}" alt="img">
+      </div>
+      <h3 class="cart-item__header">${this.product_name}</h3>       
+      <div class="cart-item__info">
+        <p class="cart-item__info__price">
+          ${this.price} $
+        </p>
+        <div>
+          ${this.quantity} шт.
+        </div>
+      </div>            
+    `;
+    return productHTML;
   }
 }
 

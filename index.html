@@ -12,13 +12,64 @@
   <div class="logo">
     eShop
   </div>
-  <button class="cart-button" type="button">Корзина</button>
+
+  <div class="cart" >
+    <button class="cart-button" type="button" onClick="onCartButtonCLick()">
+      Корзина
+    </button>
+    <div class="cart-modal cart-modal--hidden"></div>
+  </div>
 </header>
 <main class="main">
   <div class="goods-list"></div>
 </main>
 
 <script src="script.js"></script>
+
+<script>
+  window.onload = function () {
+    const productList = new ProductList();
+    productList.onInit(() => {
+      console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
+    });
+    const cart = new Cart();
+  }
+
+
+
+  function onCartButtonCLick() {
+    console.log('CLICK!!!!');
+
+    const element = document.querySelector('.cart-modal');
+
+    function hideOnClickOutside(element) {
+      const outsideClickListener = event => {
+        if (!element.contains(event.target)) { // or use: event.target.closest(selector) === null
+          console.log('LISTENER');
+          element.classList.add('cart-modal--hidden');
+          removeClickListener();
+        }
+      }
+      const removeClickListener = () => {
+        console.log('REMOVE');
+        document.removeEventListener('click', outsideClickListener);
+      }
+      document.addEventListener('click', outsideClickListener);
+    }
+
+
+    if (element.classList.contains('cart-modal--hidden')) {
+      element.classList.remove('cart-modal--hidden');
+      setTimeout(( ) => {
+        hideOnClickOutside(element);
+      }, 200);
+    } else if (!element.classList.contains('cart-modal--hidden')) {
+      element.classList.add('cart-modal--hidden');
+    }
+  }
+
+</script>
+
 </body>
 </html>
 
