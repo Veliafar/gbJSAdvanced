@@ -1,19 +1,25 @@
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 
-
-class ProductList {
-  constructor(container = '.goods-list') {
+class ListItemBase {
+  constructor(container) {
     this.container = container;
-    this.goods = [];
+    this.itemList = [];
+  }
+}
 
 
+class ProductList extends ListItemBase {
+  constructor(cart, container = '.goods-list') {
+    super(container);
+    this.cart = cart;
+    console.log('cart', this.cart);
   }
 
   onInit(callback) {
     this._fetchProducts()
       .then((data) => {
         console.log('products', data);
-        this.goods = data;
+        this.itemList = data;
         this.render();
 
         callback.bind(this)();
@@ -31,15 +37,15 @@ class ProductList {
 
   render() {
     const block = document.querySelector(this.container);
-    for (let product of this.goods) {
+    for (let product of this.itemList) {
       const item = new ProductItem(product);
-      block.insertAdjacentElement("beforeend", item.buildHtml());
+      block.insertAdjacentElement("beforeend", item.buildHtml(this.cart));
     }
   }
 
   mathProductsPriceSum() {
-    return this.goods?.length
-      ? this.goods
+    return this.itemList?.length
+      ? this.itemList
         .reduce((total, item) => total += item.price, 0)
       : 'Товаров нет'
       ;
@@ -51,6 +57,7 @@ class ProductItemBase {
     this.product_name = item?.product_name;
     this.id_product = item?.id_product;
     this.price = item?.price;
+
     this.img = item?.img || img;
   }
 }
@@ -61,7 +68,7 @@ class ProductItem extends ProductItemBase {
     super(item, img);
   }
 
-  buildHtml() {
+  buildHtml(cart = null) {
     const productHTML = document.createElement("div");
     productHTML.classList.add("goods-item");
     productHTML.innerHTML = `
@@ -78,27 +85,30 @@ class ProductItem extends ProductItemBase {
         <img class="goods-item__image-wrapper__image" src="${this.img}" alt="img">
       </div>
       <div class="goods-item__control">
-        <button class="goods-item__control__button">Купить</button>      
+        <button class="goods-item__control__button" >Купить</button>      
       </div>
     `;
+    productHTML.querySelector('.goods-item__control__button')
+      .addEventListener('click', () => cart.addItem(this, cart.itemList));
     return productHTML;
   }
 }
 
 
-class Cart {
-  constructor(container = '.cart-modal') {
-    this.container = container;
-    this.cartData = [];
+class Cart extends ListItemBase {
+  constructor(container = '.cart-modal-data', containerCommon = '.cart-modal-data-common') {
+    super(container);
+    this.containerCommon = containerCommon;
+    this.itemList = [];
     this.totalSum = 0;
     this.totalQuantity = 0;
 
     this._fetchCartItems()
       .then((data) => {
-        console.log('cartData', data);
+        console.log('itemList', data);
         this.totalSum = data?.amount;
         this.totalQuantity = data?.countGoods;
-        this.cartData = data?.contents;
+        this.itemList = data?.contents;
 
         this.render();
       });
@@ -117,7 +127,10 @@ class Cart {
 
     function hideOnClickOutside(element) {
       const outsideClickListener = event => {
-        if (!element.contains(event.target)) { // or use: event.target.closest(selector) === null
+        console.log('event.target', event.target);
+        if (!event.target.closest('.cart-modal')
+          && !event.target.classList.contains('goods-item__control__button')
+          && !event.target.classList.contains('price-control__button')) {
           element.classList.add('cart-modal--hidden');
           removeClickListener();
         }
@@ -138,53 +151,121 @@ class Cart {
     }
   }
 
-  mathTotalSum() {
+   mathTotalSum() {
   }
 
-  addItem(item) {
+  addItem(item, itemList) {
+    const cardDataItem = itemList.find(el => el.id_product === item.id_product);
+    if (cardDataItem) {
+      cardDataItem.quantity++;
+    } else {
+      itemList.push(new CartItem(item));
+    }
+    this.render();
   }
 
-  removeItem(id) {
+  removeItem(id, itemList) {
+    itemList.splice(itemList.findIndex(el => el.id_product === id), 1);
+    this.render();
   }
 
-  changeItem() {
+  increaseItem(id, itemList) {
+    itemList.find(el => el.id_product === id).quantity++;
+    this.render();
+  }
+  decreaseItem(id, itemList) {
+    const cardDataItem = itemList.find(el => el.id_product === id);
+    if (cardDataItem.quantity === 1) {
+      itemList.splice(itemList.findIndex(el => el.id_product === id), 1);
+    } else {
+      cardDataItem.quantity--;
+    }
+    this.render();
   }
 
   render() {
     const block = document.querySelector(this.container);
-    for (let product of this.cartData) {
-      const item = new CartItem(product);
-      block.insertAdjacentElement("beforeend", item.buildHtml());
+    block.innerHTML = null;
+    if (this.itemList?.length) {
+      for (let product of this.itemList) {
+        const item = new CartItem(product);
+        block.insertAdjacentElement("beforeend", item.buildHtml(this));
+      }
+    } else {
+      const productHTML = document.createElement("div");
+      productHTML.classList.add("cart-empty");
+      productHTML.innerHTML = `<div>
+          Нет товаров
+        </div>`
+      block.insertAdjacentElement("beforeend", productHTML);
     }
+
+    this.totalQuantity = this.itemList.reduce( (total, item) => total += item.quantity, 0);
+    this.totalSum = this.itemList.reduce( (total, item) => total += item.quantity * item.price, 0);
+
+    const blockCommon = document.querySelector(this.containerCommon);
+    blockCommon.innerHTML = null;
+    const commonCartHTML = document.createElement("div");
+    commonCartHTML.innerHTML = `<div class="cart-total">
+          <span>
+            всего: ${this.totalQuantity}
+          </span>
+          <span>
+            итого: ${this.totalSum} $
+          </span>
+        </div>`
+    blockCommon.insertAdjacentElement("beforeend", commonCartHTML);
   }
 }
 
 class CartItem extends ProductItemBase {
   constructor(item, img = 'https://via.placeholder.com/40x40') {
     super(item, img);
-    this.quantity = item?.quantity;
+    this.img = img;
+    this.quantity = item?.quantity || 1;
   }
 
-  buildHtml() {
+  buildHtml(cart = null) {
     const productHTML = document.createElement("div");
     productHTML.classList.add("cart-item");
     productHTML.innerHTML = `
       <div class="cart-item__image-wrapper">
         <img class="cart-item__image-wrapper__image" src="${this.img}" alt="img">
       </div>
-      <h3 class="cart-item__header">${this.product_name}</h3>       
+      
+      <div class="cart-item__header">
+        <h3 class="cart-item__header__title">
+            <span>
+              ${this.product_name}
+            </span>          
+            <span>
+              ${this.quantity > 1 ? ` x ${this.quantity}` : ``}
+            </span>
+        </h3>      
+        <span class="cart-item__header__price">
+              ${this.price} $
+        </span>
+      </div>
+       
       <div class="cart-item__info">
         <p class="cart-item__info__price">
-          ${this.price} $
+          всего: ${this.price * this.quantity} $ 
         </p>
-        <div>
-          <button style="font-weight: bold"> - </button>
+        <div class="price-control">
+          <button class="price-control__button price-control__button--minus"> - </button>
           ${this.quantity} шт.
-          <button style="font-weight: bold"> + </button>
+          <button class="price-control__button price-control__button--plus"> + </button>
+          <button class="price-control__button price-control__button--delete"> x </button>
         </div>
       </div>       
            
     `;
+    productHTML.querySelector('.price-control__button--delete')
+      .addEventListener('click', () => cart?.removeItem(this.id_product, cart.itemList));
+    productHTML.querySelector('.price-control__button--minus')
+      .addEventListener('click', () => cart?.decreaseItem(this.id_product, cart.itemList));
+    productHTML.querySelector('.price-control__button--plus')
+      .addEventListener('click', () => cart?.increaseItem(this.id_product, cart.itemList));
     return productHTML;
   }
 }

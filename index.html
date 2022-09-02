@@ -17,7 +17,11 @@
     <button class="cart-button" type="button" onClick="Cart._onCartButtonCLick()">
       Корзина
     </button>
-    <div class="cart-modal cart-modal--hidden"></div>
+    <div class="cart-modal cart-modal--hidden">
+      <div class="cart-modal-data"></div>
+      <div class="cart-modal-data-common">
+      </div>
+    </div>
   </div>
 </header>
 <main class="main">
@@ -28,11 +32,12 @@
 
 <script>
   window.onload = function () {
-    const productList = new ProductList();
+    const cart = new Cart();
+    const productList = new ProductList(cart);
     productList.onInit(() => {
       console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
     });
-    const cart = new Cart();
+
   }
 </script>
 

@@ -3,6 +3,7 @@ html {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 *, *:before, *:after {
   -webkit-box-sizing: inherit;
   -moz-box-sizing: inherit;
@@ -20,6 +21,7 @@ html {
 @accent-hover: #3CD73C;
 @accent-active: #14AF14;
 @color-lvl-1: #F4F3F7;
+@color-danger: red;
 @color-lvl-2: white;
 
 .header {
@@ -57,6 +59,7 @@ html {
       &:hover {
         background-color: @accent-hover;
       }
+
       &:active {
         background-color: @accent-active;
       }
@@ -70,16 +73,26 @@ html {
 
       padding: @offset-md;
 
-      width: 340px;
+      min-width: 340px;
       min-height: 200px;
       background-color: @color-lvl-2;
       //border: 1px solid black;
       border-radius: @offset;
       box-shadow: 4px 13px 30px 3px rgba(34, 60, 80, 0.2);
 
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
       &--hidden {
         display: none;
       }
+    }
+
+    &-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     &-item {
@@ -87,10 +100,64 @@ html {
       align-items: center;
       justify-content: space-between;
 
+      &__header {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        margin-left: @offset-md;
+        margin-right: @offset-md;
+        &__title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+
       &__info {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+
+        .price-control {
+          display: flex;
+          align-items: center;
+
+          &__button {
+            font-weight: bold;
+            padding: @offset;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background-color: @accent;
+            color: @color-lvl-2;
+            border: none;
+            border-radius: @offset;
+            cursor: pointer;
+
+            &--minus {
+              margin-right: @offset-sm;
+            }
+
+            &--plus {
+              margin-left: @offset-sm;
+            }
+
+            &:hover {
+              background-color: @accent-hover;
+            }
+
+            &:active {
+              background-color: @accent-active;
+            }
+
+            &--delete {
+              margin-left: @offset-sm;
+              background-color: @color-danger;
+            }
+          }
+        }
       }
     }
   }
@@ -118,16 +185,26 @@ html {
 
     &__header {
       display: flex;
-      justify-content: center;
-    }
-    &__info {
-      display: flex;
-      align-items: flex-end;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      &__title {
+      }
       &__price {
 
       }
     }
+
+    &__info {
+      display: flex;
+      align-items: flex-end;
+      flex-direction: column;
+
+      &__price {
+
+      }
+    }
+
     &__image-wrapper {
       background-color: @color-lvl-2;
       min-width: 150px;
@@ -164,6 +241,7 @@ html {
 
     &__control {
       margin-top: @offset-md;
+
       &__button {
         width: 100%;
         padding: @offset-sm;
@@ -172,9 +250,11 @@ html {
         background-color: @accent;
         color: white;
         cursor: pointer;
+
         &:hover {
           background-color: @accent-hover;
         }
+
         &:active {
           background-color: @accent-active;
         }
@@ -184,3 +264,4 @@ html {
 
 
 }
+
