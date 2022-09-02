@@ -12,8 +12,13 @@
   <div class="logo">
     eShop
   </div>
-
   <div class="cart" >
+    <form action="#" class="search-form">
+      <input type="text" class="search-form__input">
+      <button type="submit" class="search-form__button">
+        &#128269;
+      </button>
+    </form>
     <button class="cart-button" type="button" onClick="Cart._onCartButtonCLick()">
       Корзина
     </button>
@@ -34,9 +39,7 @@
   window.onload = function () {
     const cart = new Cart();
     const productList = new ProductList(cart);
-    productList.onInit(() => {
-      console.log(`Общая сумма товаров %c${productList.mathProductsPriceSum()}`, 'background-color: green;color: white;');
-    });
+    productList.onInit();
 
   }
 </script>

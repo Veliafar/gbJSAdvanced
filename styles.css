@@ -31,8 +31,42 @@ html {
 }
 .header .cart {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+.header .cart .search-form {
+  display: flex;
+  align-items: center;
+}
+.header .cart .search-form__input {
+  border: none;
+  height: 32px;
+  padding: calc(4px * 2);
+  border-radius: 4px 0 0 4px;
+}
+.header .cart .search-form__button {
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  padding: calc(4px * 2);
+  background-color: limegreen;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+.header .cart .search-form__button:hover {
+  background-color: #3CD73C;
+}
+.header .cart .search-form__button:active {
+  background-color: #14AF14;
+}
+.header .cart .search-form__button:disabled {
+  background-color: gray;
 }
 .header .cart-button {
+  margin-left: calc(4px * 4);
+  height: 32px;
   display: flex;
   padding: calc(4px * 2);
   align-items: center;

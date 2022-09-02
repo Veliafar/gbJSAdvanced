@@ -13,6 +13,8 @@ html {
   padding: 0;
 }
 
+@height: 32px;
+
 @offset: 4px;
 @offset-md: calc(@offset * 4);
 @offset-sm: calc(@offset * 2);
@@ -45,7 +47,51 @@ html {
   .cart {
     position: relative;
 
+    display: flex;
+    align-items: center;
+
+    .search-form {
+      display: flex;
+      align-items: center;
+      &__input {
+        border: none;
+        height: @height;
+        padding: @offset-sm;
+
+        border-radius: @offset 0 0 @offset;
+      }
+      &__button {
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: @height;
+        padding: @offset-sm;
+        background-color: @accent;
+
+        border-radius: 0 @offset  @offset 0;
+
+        cursor: pointer;
+
+        &:hover {
+          background-color: @accent-hover;
+        }
+
+        &:active {
+          background-color: @accent-active;
+        }
+        &:disabled {
+          background-color: gray;
+        }
+      }
+    }
+
+
     &-button {
+      margin-left: @offset-md;
+
+      height: @height;
+
       display: flex;
       padding: @offset-sm;
       align-items: center;

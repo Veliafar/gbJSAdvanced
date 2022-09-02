@@ -17,16 +17,35 @@ class ProductList extends ListItemBase {
   constructor(cart, container = '.goods-list') {
     super(container);
     this.cart = cart;
+    this.itemListKeep = [];
   }
 
   onInit(callback) {
     this._fetchProducts()
       .then((data) => {
-        this.itemList = data;
+        this.itemList = [...data];
+        this.itemListKeep = [...data];
         this.render();
 
-        callback.bind(this)();
+        if (callback) {
+          callback.bind(this)();
+        }
       });
+
+    document.querySelector('.search-form')
+      .addEventListener('submit', e =>  {
+        e.preventDefault();
+        this.filter(document.querySelector('.search-form__input').value);
+      })
+  }
+
+  filter(value) {
+    if (!value) {
+      this.itemList = [...this.itemListKeep];
+    }
+    const regExp = new RegExp(value, 'i');
+    this.itemList = this.itemList.filter(product => regExp.test(product.product_name));
+    this.render();
   }
 
   _fetchProducts() {
@@ -40,6 +59,7 @@ class ProductList extends ListItemBase {
 
   render() {
     const block = document.querySelector(this.container);
+    block.innerHTML = '';
     for (let product of this.itemList) {
       const item = new ProductItem(product);
       block.insertAdjacentElement("beforeend", item.buildHtml(this.cart));
