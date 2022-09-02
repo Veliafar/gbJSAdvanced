@@ -1,5 +1,10 @@
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 
+const CART_DEL_CLASS = `price-control__button--delete`;
+const CART_INC_CLASS = `price-control__button--plus`;
+const CART_DEC_CLASS = `price-control__button--minus`;
+const PRODUCT_BUY_CLASS = `goods-item__control__button`;
+
 class ListItemBase {
   constructor(container) {
     this.container = container;
@@ -88,7 +93,7 @@ class ProductItem extends ProductItemBase {
         <button class="goods-item__control__button" >Купить</button>      
       </div>
     `;
-    productHTML.querySelector('.goods-item__control__button')
+    productHTML.querySelector(`.${PRODUCT_BUY_CLASS}`)
       .addEventListener('click', () => cart.addItem(this, cart.itemList));
     return productHTML;
   }
@@ -151,9 +156,6 @@ class Cart extends ListItemBase {
     }
   }
 
-   mathTotalSum() {
-  }
-
   addItem(item, itemList) {
     const cardDataItem = itemList.find(el => el.id_product === item.id_product);
     if (cardDataItem) {
@@ -195,7 +197,7 @@ class Cart extends ListItemBase {
       const productHTML = document.createElement("div");
       productHTML.classList.add("cart-empty");
       productHTML.innerHTML = `<div>
-          Нет товаров
+          нет товаров
         </div>`
       block.insertAdjacentElement("beforeend", productHTML);
     }
@@ -234,37 +236,32 @@ class CartItem extends ProductItemBase {
       </div>
       
       <div class="cart-item__header">
-        <h3 class="cart-item__header__title">
-            <span>
-              ${this.product_name}
-            </span>          
-            <span>
-              ${this.quantity > 1 ? ` x ${this.quantity}` : ``}
-            </span>
+        <h3 class="cart-item__header__title" title="${this.product_name}">
+            ${this.product_name}           
         </h3>      
-        <span class="cart-item__header__price">
-              ${this.price} $
+        <span class="cart-item__header__price" title="${this.price}">
+             ${this.price} $
         </span>
       </div>
        
       <div class="cart-item__info">
+        <div class="price-control">
+          <button class="price-control__button ${CART_DEC_CLASS}"> - </button>
+          ${this.quantity} шт.
+          <button class="price-control__button ${CART_INC_CLASS}"> + </button>
+          <button class="price-control__button ${CART_DEL_CLASS}"> x </button>
+        </div>
         <p class="cart-item__info__price">
           всего: ${this.price * this.quantity} $ 
-        </p>
-        <div class="price-control">
-          <button class="price-control__button price-control__button--minus"> - </button>
-          ${this.quantity} шт.
-          <button class="price-control__button price-control__button--plus"> + </button>
-          <button class="price-control__button price-control__button--delete"> x </button>
-        </div>
+        </p>        
       </div>       
            
     `;
-    productHTML.querySelector('.price-control__button--delete')
+    productHTML.querySelector(`.${CART_DEL_CLASS}`)
       .addEventListener('click', () => cart?.removeItem(this.id_product, cart.itemList));
-    productHTML.querySelector('.price-control__button--minus')
+    productHTML.querySelector(`.${CART_DEC_CLASS}`)
       .addEventListener('click', () => cart?.decreaseItem(this.id_product, cart.itemList));
-    productHTML.querySelector('.price-control__button--plus')
+    productHTML.querySelector(`.${CART_INC_CLASS}`)
       .addEventListener('click', () => cart?.increaseItem(this.id_product, cart.itemList));
     return productHTML;
   }

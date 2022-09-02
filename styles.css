@@ -49,6 +49,14 @@ html {
 .header .cart-button:active {
   background-color: #14AF14;
 }
+.header .cart-empty {
+  display: flex;
+  flex: 1;
+  width: 300px;
+  height: 140px;
+  justify-content: center;
+  align-items: center;
+}
 .header .cart-modal {
   position: absolute;
   top: 38px;
@@ -76,6 +84,9 @@ html {
   align-items: center;
   justify-content: space-between;
 }
+.header .cart-item:not(:first-child) {
+  margin-top: calc(4px * 4);
+}
 .header .cart-item__header {
   display: flex;
   flex-direction: column;
@@ -87,6 +98,16 @@ html {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 92px;
+  white-space: nowrap;
+}
+.header .cart-item__header__price {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 92px;
+  white-space: nowrap;
 }
 .header .cart-item__info {
   display: flex;
@@ -103,8 +124,8 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   background-color: limegreen;
   color: white;
   border: none;

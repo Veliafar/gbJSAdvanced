@@ -65,6 +65,15 @@ html {
       }
     }
 
+    &-empty {
+      display: flex;
+      flex: 1;
+      width: 300px;
+      height: 140px;
+      justify-content: center;
+      align-items: center;
+    }
+
     &-modal {
       position: absolute;
 
@@ -95,10 +104,16 @@ html {
       justify-content: space-between;
     }
 
+
+
     &-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      &:not(:first-child) {
+        margin-top: @offset-md;
+      }
 
       &__header {
         display: flex;
@@ -106,10 +121,23 @@ html {
         flex: 1;
         margin-left: @offset-md;
         margin-right: @offset-md;
+
+        .product-overflow() {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 92px;
+          white-space: nowrap;
+        }
+
         &__title {
           display: flex;
           justify-content: space-between;
           align-items: center;
+
+          .product-overflow;
+        }
+        &__price {
+          .product-overflow;
         }
       }
 
@@ -128,8 +156,8 @@ html {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 16px;
-            height: 16px;
+            width: 24px;
+            height: 24px;
             background-color: @accent;
             color: @color-lvl-2;
             border: none;
