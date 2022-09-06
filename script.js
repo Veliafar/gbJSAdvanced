@@ -5,6 +5,7 @@ const app = new  Vue({
   data: {
     catalogDataURL: '/catalogData.json',
     cartURL: '/getBasket.json',
+    deleteFromBasketURL: '/deleteFromBasket.json',
     itemList: [],
     itemListFiltered: [],
     cartList: [],
@@ -14,6 +15,7 @@ const app = new  Vue({
     cartShow: false,
     cartImg: 'https://via.placeholder.com/40x40',
     productImg: 'https://via.placeholder.com/218x204',
+
   },
   mounted() {
     this.fetchCart()
@@ -44,6 +46,13 @@ const app = new  Vue({
     },
     fetchProducts() {
       return fetch(`${API_URL}${this.catalogDataURL}`)
+        .then((json) => json.json())
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    deleteFromCart() {
+      return fetch(`${API_URL}${this.deleteFromBasketURL}`)
         .then((json) => json.json())
         .catch((err) => {
           console.error(err);
@@ -83,21 +92,34 @@ const app = new  Vue({
       this.cartShow = !this.cartShow;
     },
     removeItem(id) {
-      this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
-      this.mathTotal();
+      this.deleteFromCart()
+        .then((res) => {
+          if (res.result===1) {
+            this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+            this.mathTotal();
+          }
+        })
     },
     increaseItem(id) {
       this.cartList.find(el => el.id_product === id).quantity++;
       this.mathTotal();
     },
     decreaseItem(id) {
-      const cardDataItem = this.cartList.find(el => el.id_product === id);
-      if (cardDataItem.quantity === 1) {
-        this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
-      } else {
-        cardDataItem.quantity--;
-      }
-      this.mathTotal();
+
+      this.deleteFromCart()
+        .then((res) => {
+          if (res.result===1) {
+            const cardDataItem = this.cartList.find(el => el.id_product === id);
+            if (cardDataItem.quantity === 1) {
+              this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+            } else {
+              cardDataItem.quantity--;
+            }
+            this.mathTotal();
+          }
+        })
+
+
     }
   }
 })
