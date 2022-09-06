@@ -15,13 +15,13 @@
     </div>
     <div class="cart">
 
-      <form action="#" class="search-form">
+      <form action="#" class="search-form" @submit.prevent="filterItems()">
         <label for="filter"></label>
         <div class="search-form-input">
           <input id="filter" type="text" class="search-form__input" v-model="filterQuery">
           <div v-if="filterQuery" class="search-form__input-clear" @click="clearFilter()"> &#x2715 </div>
         </div>
-        <button type="submit" class="search-form__button" @submit.stop @click="filterItems()">
+        <button type="submit" class="search-form__button" >
           &#x1F50E;&#xFE0E;
         </button>
       </form>
