@@ -28,6 +28,9 @@
 
       <button class="cart-button" type="button" @click="cartClick()">
         Корзина
+        <span class="cart-button__count" v-if="cartList?.length">
+          {{totalQuantity}}
+        </span>
       </button>
 
       <div class="cart-modal" v-show="cartShow">

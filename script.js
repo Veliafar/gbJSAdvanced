@@ -4,6 +4,7 @@ const app = new  Vue({
   el: '#app',
   data: {
     catalogDataURL: '/catalogData.json',
+    cartURL: '/getBasket.json',
     itemList: [],
     itemListFiltered: [],
     cartList: [],
@@ -11,12 +12,22 @@ const app = new  Vue({
     totalSum: 0,
     filterQuery: '',
     cartShow: false,
+    cartImg: 'https://via.placeholder.com/40x40',
+    productImg: 'https://via.placeholder.com/218x204',
   },
   mounted() {
+    this.fetchCart()
+      .then((data) => {
+        for (const item of data.contents) {
+          item.img = this.cartImg;
+          this.cartList.push(item);
+        }
+        this.mathTotal();
+      })
     this.fetchProducts()
       .then((data) => {
         const mappedData = [...data].map(el => {
-          el.img = 'https://via.placeholder.com/218x204';
+          el.img = this.productImg;
           return el;
         });
         this.itemList = Array.from(mappedData)
@@ -24,6 +35,13 @@ const app = new  Vue({
       });
   },
   methods: {
+    fetchCart() {
+      return fetch(`${API_URL}${this.cartURL}`)
+        .then((json) => json.json())
+        .catch((err) => {
+          console.error(err);
+        });
+    },
     fetchProducts() {
       return fetch(`${API_URL}${this.catalogDataURL}`)
         .then((json) => json.json())
@@ -40,7 +58,7 @@ const app = new  Vue({
           ...item,
           quantity: 1
         };
-        cartItem.img = 'https://via.placeholder.com/40x40';
+        cartItem.img = this.cartImg;
         this.cartList.push(cartItem);
       }
       this.mathTotal();

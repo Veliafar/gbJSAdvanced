@@ -96,6 +96,20 @@ html {
   background-color: limegreen;
   color: white;
   text-shadow: black 1px 1px 1px;
+  position: relative;
+}
+.header .cart-button__count {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .header .cart-button:hover {
   background-color: #3CD73C;
