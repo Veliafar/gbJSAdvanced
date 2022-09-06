@@ -53,12 +53,32 @@ html {
     .search-form {
       display: flex;
       align-items: center;
+
+      &-input {
+        position: relative;
+      }
+
       &__input {
         border: none;
         height: @height;
         padding: @offset-sm;
-
+        padding-right: 32px;
         border-radius: @offset 0 0 @offset;
+      }
+      &__input-clear {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 4px;
+        top: 6px;
+        border-radius: 50%;
+        background-color: lightgrey;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
       }
       &__button {
         border: none;
@@ -68,6 +88,7 @@ html {
         height: @height;
         padding: @offset-sm;
         background-color: @accent;
+        color: @color-lvl-2;
 
         border-radius: 0 @offset  @offset 0;
 

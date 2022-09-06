@@ -1,285 +1,87 @@
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 
-const CART_DEL_CLASS = `price-control__button--delete`;
-const CART_INC_CLASS = `price-control__button--plus`;
-const CART_DEC_CLASS = `price-control__button--minus`;
-const PRODUCT_BUY_CLASS = `goods-item__control__button`;
-
-class ListItemBase {
-  constructor(container) {
-    this.container = container;
-    this.itemList = [];
-  }
-}
-
-
-class ProductList extends ListItemBase {
-  constructor(cart, container = '.goods-list') {
-    super(container);
-    this.cart = cart;
-    this.itemListKeep = [];
-  }
-
-  onInit(callback) {
-    this._fetchProducts()
+const app = new  Vue({
+  el: '#app',
+  data: {
+    catalogDataURL: '/catalogData.json',
+    itemList: [],
+    itemListFiltered: [],
+    cartList: [],
+    totalQuantity: 0,
+    totalSum: 0,
+    filterQuery: '',
+    cartShow: false,
+  },
+  mounted() {
+    this.fetchProducts()
       .then((data) => {
-        this.itemList = [...data];
-        this.itemListKeep = [...data];
-        this.render();
-
-        if (callback) {
-          callback.bind(this)();
-        }
+        const mappedData = [...data].map(el => {
+          el.img = 'https://via.placeholder.com/218x204';
+          return el;
+        });
+        this.itemList = Array.from(mappedData)
+        this.itemListFiltered = Array.from(mappedData);
       });
-
-    document.querySelector('.search-form')
-      .addEventListener('submit', e =>  {
-        e.preventDefault();
-        this.filter(document.querySelector('.search-form__input').value);
-      })
-  }
-
-  filter(value) {
-    if (!value) {
-      this.itemList = [...this.itemListKeep];
-    }
-    const regExp = new RegExp(value, 'i');
-    this.itemList = this.itemList.filter(product => regExp.test(product.product_name));
-    this.render();
-  }
-
-  _fetchProducts() {
-    return fetch(`${API_URL}/catalogData.json`)
-      .then((json) => json.json())
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-
-  render() {
-    const block = document.querySelector(this.container);
-    block.innerHTML = '';
-    for (let product of this.itemList) {
-      const item = new ProductItem(product);
-      block.insertAdjacentElement("beforeend", item.buildHtml(this.cart));
-    }
-  }
-
-  mathProductsPriceSum() {
-    return this.itemList?.length
-      ? this.itemList
-        .reduce((total, item) => total += item.price, 0)
-      : 'Товаров нет'
-      ;
-  }
-}
-
-class ProductItemBase {
-  constructor(item, img = 'https://via.placeholder.com/218x204') {
-    this.product_name = item?.product_name;
-    this.id_product = item?.id_product;
-    this.price = item?.price;
-
-    this.img = item?.img || img;
-  }
-}
-
-
-class ProductItem extends ProductItemBase {
-  constructor(item, img = 'https://via.placeholder.com/218x204') {
-    super(item, img);
-  }
-
-  buildHtml(cart = null) {
-    const productHTML = document.createElement("div");
-    productHTML.classList.add("goods-item");
-    productHTML.innerHTML = `
-      <h3 class="goods-item__header">${this.product_name}</h3>
-      <div class="goods-item__info">
-        <p class="goods-item__info__price">
-          ${this.price} $
-        </p>
-        <p class="goods-item__info__text">
-          Lorem ipsum dolor.
-        </p>
-      </div>
-      <div class="goods-item__image-wrapper">
-        <img class="goods-item__image-wrapper__image" src="${this.img}" alt="img">
-      </div>
-      <div class="goods-item__control">
-        <button class="goods-item__control__button" >Купить</button>      
-      </div>
-    `;
-    productHTML.querySelector(`.${PRODUCT_BUY_CLASS}`)
-      .addEventListener('click', () => cart.addItem(this, cart.itemList));
-    return productHTML;
-  }
-}
-
-
-class Cart extends ListItemBase {
-  constructor(container = '.cart-modal-data', containerCommon = '.cart-modal-data-common') {
-    super(container);
-    this.containerCommon = containerCommon;
-    this.itemList = [];
-    this.totalSum = 0;
-    this.totalQuantity = 0;
-
-    this._fetchCartItems()
-      .then((data) => {
-        this.totalSum = data?.amount;
-        this.totalQuantity = data?.countGoods;
-        this.itemList = data?.contents;
-
-        this.render();
-      });
-  }
-
-  _fetchCartItems() {
-    return fetch(`${API_URL}/getBasket.json`)
-      .then((json) => json.json())
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  static _onCartButtonCLick() {
-    const element = document.querySelector('.cart-modal');
-
-    function hideOnClickOutside(element) {
-      const outsideClickListener = event => {
-        if (!event.target.closest('.cart-modal')
-          && !event.target.classList.contains('goods-item__control__button')
-          && !event.target.classList.contains('price-control__button')) {
-          element.classList.add('cart-modal--hidden');
-          removeClickListener();
-        }
+  },
+  methods: {
+    fetchProducts() {
+      return fetch(`${API_URL}${this.catalogDataURL}`)
+        .then((json) => json.json())
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    addItemToCart(item) {
+      const cartItem = this.cartList.find(el => el.id_product === item.id_product);
+      if (cartItem) {
+        cartItem.quantity++;
+      } else {
+        const cartItem = {
+          ...item,
+          quantity: 1
+        };
+        cartItem.img = 'https://via.placeholder.com/40x40';
+        this.cartList.push(cartItem);
       }
-      const removeClickListener = () => {
-        document.removeEventListener('click', outsideClickListener);
+      this.mathTotal();
+    },
+    mathTotal() {
+      this.totalQuantity = this.cartList.reduce( (total, item) => total += item.quantity, 0);
+      this.totalSum = this.cartList.reduce( (total, item) => total += item.quantity * item.price, 0);
+    },
+    filterItems() {
+      if (!this.filterQuery) {
+        this.itemListFiltered = [...this.itemList];
+      } else {
+        const regExp = new RegExp(this.filterQuery, 'i');
+        this.itemListFiltered = this.itemList.filter(product => regExp.test(product.product_name));
       }
-      document.addEventListener('click', outsideClickListener);
-    }
-
-    if (element.classList.contains('cart-modal--hidden')) {
-      element.classList.remove('cart-modal--hidden');
-      setTimeout(( ) => {
-        hideOnClickOutside(element);
-      }, 200);
-    } else if (!element.classList.contains('cart-modal--hidden')) {
-      element.classList.add('cart-modal--hidden');
-    }
-  }
-
-  addItem(item, itemList) {
-    const cardDataItem = itemList.find(el => el.id_product === item.id_product);
-    if (cardDataItem) {
-      cardDataItem.quantity++;
-    } else {
-      itemList.push(new CartItem(item));
-    }
-    this.render();
-  }
-
-  removeItem(id, itemList) {
-    itemList.splice(itemList.findIndex(el => el.id_product === id), 1);
-    this.render();
-  }
-
-  increaseItem(id, itemList) {
-    itemList.find(el => el.id_product === id).quantity++;
-    this.render();
-  }
-  decreaseItem(id, itemList) {
-    const cardDataItem = itemList.find(el => el.id_product === id);
-    if (cardDataItem.quantity === 1) {
-      itemList.splice(itemList.findIndex(el => el.id_product === id), 1);
-    } else {
-      cardDataItem.quantity--;
-    }
-    this.render();
-  }
-
-  render() {
-    const block = document.querySelector(this.container);
-    block.innerHTML = null;
-    if (this.itemList?.length) {
-      for (let product of this.itemList) {
-        const item = new CartItem(product);
-        block.insertAdjacentElement("beforeend", item.buildHtml(this));
+    },
+    clearFilter() {
+      this.filterQuery = '';
+      this.filterItems();
+    },
+    cartClick() {
+      this.cartShow = !this.cartShow;
+    },
+    removeItem(id) {
+      this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+      this.mathTotal();
+    },
+    increaseItem(id) {
+      this.cartList.find(el => el.id_product === id).quantity++;
+      this.mathTotal();
+    },
+    decreaseItem(id) {
+      const cardDataItem = this.cartList.find(el => el.id_product === id);
+      if (cardDataItem.quantity === 1) {
+        this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+      } else {
+        cardDataItem.quantity--;
       }
-    } else {
-      const productHTML = document.createElement("div");
-      productHTML.classList.add("cart-empty");
-      productHTML.innerHTML = `<div>
-          нет товаров
-        </div>`
-      block.insertAdjacentElement("beforeend", productHTML);
+      this.mathTotal();
     }
-
-    this.totalQuantity = this.itemList.reduce( (total, item) => total += item.quantity, 0);
-    this.totalSum = this.itemList.reduce( (total, item) => total += item.quantity * item.price, 0);
-
-    const blockCommon = document.querySelector(this.containerCommon);
-    blockCommon.innerHTML = null;
-    const commonCartHTML = document.createElement("div");
-    commonCartHTML.innerHTML = `<div class="cart-total">
-          <span>
-            всего: ${this.totalQuantity}
-          </span>
-          <span>
-            итого: ${this.totalSum} $
-          </span>
-        </div>`
-    blockCommon.insertAdjacentElement("beforeend", commonCartHTML);
   }
-}
+})
 
-class CartItem extends ProductItemBase {
-  constructor(item, img = 'https://via.placeholder.com/40x40') {
-    super(item, img);
-    this.img = img;
-    this.quantity = item?.quantity || 1;
-  }
-
-  buildHtml(cart = null) {
-    const productHTML = document.createElement("div");
-    productHTML.classList.add("cart-item");
-    productHTML.innerHTML = `
-      <div class="cart-item__image-wrapper">
-        <img class="cart-item__image-wrapper__image" src="${this.img}" alt="img">
-      </div>
-      
-      <div class="cart-item__header">
-        <h3 class="cart-item__header__title" title="${this.product_name}">
-            ${this.product_name}           
-        </h3>      
-        <span class="cart-item__header__price" title="${this.price}">
-             ${this.price} $
-        </span>
-      </div>
-       
-      <div class="cart-item__info">
-        <div class="price-control">
-          <button class="price-control__button ${CART_DEC_CLASS}"> - </button>
-          ${this.quantity} шт.
-          <button class="price-control__button ${CART_INC_CLASS}"> + </button>
-          <button class="price-control__button ${CART_DEL_CLASS}"> x </button>
-        </div>
-        <p class="cart-item__info__price">
-          всего: ${this.price * this.quantity} $ 
-        </p>        
-      </div>       
-           
-    `;
-    productHTML.querySelector(`.${CART_DEL_CLASS}`)
-      .addEventListener('click', () => cart?.removeItem(this.id_product, cart.itemList));
-    productHTML.querySelector(`.${CART_DEC_CLASS}`)
-      .addEventListener('click', () => cart?.decreaseItem(this.id_product, cart.itemList));
-    productHTML.querySelector(`.${CART_INC_CLASS}`)
-      .addEventListener('click', () => cart?.increaseItem(this.id_product, cart.itemList));
-    return productHTML;
-  }
-}
 
