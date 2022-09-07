@@ -8,68 +8,111 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="header">
-  <div class="logo">
-    eShop
-  </div>
-  <div class="cart" >
-    <form action="#" class="search-form">
-      <input type="text" class="search-form__input">
-      <button type="submit" class="search-form__button">
-        &#128269;
+<div id="app">
+  <header class="header">
+    <div class="logo">
+      eShop
+    </div>
+    <div class="cart">
+
+      <form action="#" class="search-form" @submit.prevent="filterItems()">
+        <label for="filter"></label>
+        <div class="search-form-input">
+          <input id="filter" type="text" class="search-form__input" v-model="filterQuery">
+          <div v-if="filterQuery" class="search-form__input-clear" @click="clearFilter()"> &#x2715 </div>
+        </div>
+        <button type="submit" class="search-form__button" >
+          &#x1F50E;&#xFE0E;
+        </button>
+      </form>
+
+      <button class="cart-button" type="button" @click="cartClick()">
+        Корзина
+        <span class="cart-button__count" v-if="cartList?.length">
+          {{totalQuantity}}
+        </span>
       </button>
-    </form>
-    <button class="cart-button" type="button" onClick="Cart._onCartButtonCLick()">
-      Корзина
-    </button>
-    <div class="cart-modal cart-modal--hidden">
-      <div class="cart-modal-data"></div>
-      <div class="cart-modal-data-common">
+
+      <div class="cart-modal" v-show="cartShow">
+        <div class="cart-modal-data">
+          <div class="cart-empty" v-if="!cartList?.length">
+            <div>
+              добавьте товаров
+            </div>
+          </div>
+          <div class="cart-item" v-for="item of cartList">
+            <div class="cart-item__image-wrapper">
+              <img class="cart-item__image-wrapper__image" :src="item.img" alt="img">
+            </div>
+
+            <div class="cart-item__header">
+              <h3 class="cart-item__header__title" title="${this.product_name}">
+                {{item.product_name}}
+              </h3>
+              <span class="cart-item__header__price" title="${this.price}">
+                {{item.price}} $
+              </span>
+            </div>
+
+            <div class="cart-item__info">
+              <div class="price-control">
+                <button class="price-control__button price-control__button--minus "
+                        @click="decreaseItem(item.id_product)"> -
+                </button>
+                {{item.quantity}} шт.
+                <button class="price-control__button price-control__button--plus"
+                        @click="increaseItem(item.id_product)"> +
+                </button>
+                <button class="price-control__button price-control__button--delete"
+                        @click="removeItem(item.id_product)"> &#x2715
+                </button>
+              </div>
+              <p class="cart-item__info__price">
+                всего: {{item.price * item.quantity}} $
+              </p>
+            </div>
+          </div>
+
+        </div>
+        <div  v-if="cartList?.length" class="cart-modal-data-common">
+
+          <div class="cart-total">
+            <span>
+            всего: {{totalQuantity}}
+          </span>
+            <span>
+            итого: {{totalSum}} $
+          </span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</header>
-<main class="main">
-  <div class="goods-list"></div>
+  </header>
+  <main class="main">
+    <div class="goods-list">
+      <div class="goods-item" v-for="item of itemListFiltered">
+        <h3 class="goods-item__header">{{item.product_name}}</h3>
+        <div class="goods-item__info">
+          <p class="goods-item__info__price">
+            {{item.price}} $
+          </p>
+          <p class="goods-item__info__text">
+            Lorem ipsum dolor.
+          </p>
+        </div>
+        <div class="goods-item__image-wrapper">
+          <img class="goods-item__image-wrapper__image" :src="item.img" :alt="item.product_name">
+        </div>
+        <div class="goods-item__control">
+          <button class="goods-item__control__button" @click="addItemToCart(item)">Купить</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
 
-  <div style="margin-top: 40px" id="regTask">
-    One: 'Hi Mary.' Two: 'Oh, hi.'
-    One: 'How are you doing?'
-    Two: 'I'm doing alright. How about you?'
-    One: 'Not too bad. The weather is great isn't it?'
-    Two: 'Yes. It's absolutely beautiful today.'
-    One: 'I wish it was like this more frequently.'
-    Two: 'Me too.'
-    One: 'So where are you going now?'
-    Two: 'I'm going to meet a friend of mine at the department store.'
-    One: 'Going to do a little shopping?'
-    Two: 'Yeah, I have to buy some presents for my parents.'
-    One: 'What's the occasion?'
-    Two: 'It's their anniversary.'
-    One: 'That's great. Well, you better get going. You don't want to be late.'
-    Two: 'I'll see you next time.'
-    One: 'Sure. Bye.'
-  </div>
-  <button style="margin-top: 40px" onclick="replaceQuotes()">
-    Заменить одинарные ковычки
-  </button>
-</main>
-
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.8"></script>
 <script src="script.js"></script>
-
-<script>
-  window.onload = function () {
-    const cart = new Cart();
-    const productList = new ProductList(cart);
-    productList.onInit();
-  }
-
-  function replaceQuotes() {
-    let textContainer = document.getElementById('regTask');
-    textContainer.textContent = textContainer.textContent.replace(/'/g, '"');
-    textContainer.textContent = textContainer.textContent.replace(/\B'|'\B/g, '"');
-  }
-</script>
 
 </body>
 </html>

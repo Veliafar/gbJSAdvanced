@@ -53,12 +53,32 @@ html {
     .search-form {
       display: flex;
       align-items: center;
+
+      &-input {
+        position: relative;
+      }
+
       &__input {
         border: none;
         height: @height;
         padding: @offset-sm;
-
+        padding-right: 32px;
         border-radius: @offset 0 0 @offset;
+      }
+      &__input-clear {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 4px;
+        top: 6px;
+        border-radius: 50%;
+        background-color: lightgrey;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
       }
       &__button {
         border: none;
@@ -68,9 +88,8 @@ html {
         height: @height;
         padding: @offset-sm;
         background-color: @accent;
-
+        color: @color-lvl-2;
         border-radius: 0 @offset  @offset 0;
-
         cursor: pointer;
 
         &:hover {
@@ -101,6 +120,21 @@ html {
       background-color: @accent;
       color: white;
       text-shadow: black 1px 1px 1px;
+
+      position: relative;
+      &__count {
+        position: absolute;
+        right: -10px;
+        top: -10px;
+        background-color: red;
+        color: @color-lvl-2;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
       &:hover {
         background-color: @accent-hover;

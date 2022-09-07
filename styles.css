@@ -38,11 +38,30 @@ html {
   display: flex;
   align-items: center;
 }
+.header .cart .search-form-input {
+  position: relative;
+}
 .header .cart .search-form__input {
   border: none;
   height: 32px;
   padding: calc(4px * 2);
+  padding-right: 32px;
   border-radius: 4px 0 0 4px;
+}
+.header .cart .search-form__input-clear {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 4px;
+  top: 6px;
+  border-radius: 50%;
+  background-color: lightgrey;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
 }
 .header .cart .search-form__button {
   border: none;
@@ -52,6 +71,7 @@ html {
   height: 32px;
   padding: calc(4px * 2);
   background-color: limegreen;
+  color: white;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
 }
@@ -76,6 +96,20 @@ html {
   background-color: limegreen;
   color: white;
   text-shadow: black 1px 1px 1px;
+  position: relative;
+}
+.header .cart-button__count {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .header .cart-button:hover {
   background-color: #3CD73C;
