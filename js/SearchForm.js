@@ -9,7 +9,6 @@ Vue.component('search', {
         <button type="submit" class="search-form__button">
           &#x1F50E;&#xFE0E;
         </button>
-      </form>
-     
+      </form>   
   `,
 })

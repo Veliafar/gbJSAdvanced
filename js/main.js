@@ -99,14 +99,13 @@ const app = new  Vue({
             this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
             this.mathTotal();
           }
-        })
+        });
     },
     increaseItem(id) {
       this.cartList.find(el => el.id_product === id).quantity++;
       this.mathTotal();
     },
     decreaseItem(id) {
-
       this.deleteFromCart()
         .then((res) => {
           if (res.result===1) {
@@ -118,9 +117,7 @@ const app = new  Vue({
             }
             this.mathTotal();
           }
-        })
-
-
+        });
     }
   }
 })
