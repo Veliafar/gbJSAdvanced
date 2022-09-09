@@ -5,6 +5,7 @@ const app = new  Vue({
   data: {
     catalogDataURL: '/catalogData.json',
     cartURL: '/getBasket.json',
+    addFromBasketURL: '/addFromBasket.json',
     deleteFromBasketURL: '/deleteFromBasket.json',
     itemList: [],
     itemListFiltered: [],
@@ -12,7 +13,7 @@ const app = new  Vue({
     totalQuantity: 0,
     totalSum: 0,
     filterQuery: '',
-    cartShow: false,
+    isCartShow: false,
     cartImg: 'https://via.placeholder.com/40x40',
     productImg: 'https://via.placeholder.com/218x204',
 
@@ -89,7 +90,7 @@ const app = new  Vue({
       this.filterItems();
     },
     cartClick() {
-      this.cartShow = !this.cartShow;
+      this.isCartShow = !this.isCartShow;
     },
     removeItem(id) {
       this.deleteFromCart()
@@ -98,14 +99,13 @@ const app = new  Vue({
             this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
             this.mathTotal();
           }
-        })
+        });
     },
     increaseItem(id) {
       this.cartList.find(el => el.id_product === id).quantity++;
       this.mathTotal();
     },
     decreaseItem(id) {
-
       this.deleteFromCart()
         .then((res) => {
           if (res.result===1) {
@@ -117,9 +117,7 @@ const app = new  Vue({
             }
             this.mathTotal();
           }
-        })
-
-
+        });
     }
   }
 })

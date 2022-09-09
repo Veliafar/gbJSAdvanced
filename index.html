@@ -15,16 +15,10 @@
     </div>
     <div class="cart">
 
-      <form action="#" class="search-form" @submit.prevent="filterItems()">
-        <label for="filter"></label>
-        <div class="search-form-input">
-          <input id="filter" type="text" class="search-form__input" v-model="filterQuery">
-          <div v-if="filterQuery" class="search-form__input-clear" @click="clearFilter()"> &#x2715 </div>
-        </div>
-        <button type="submit" class="search-form__button" >
-          &#x1F50E;&#xFE0E;
-        </button>
-      </form>
+      <search
+        @filter-items="filterItems"
+        @clear-filter="clearFilter">
+      </search>
 
       <button class="cart-button" type="button" @click="cartClick()">
         Корзина
@@ -33,86 +27,30 @@
         </span>
       </button>
 
-      <div class="cart-modal" v-show="cartShow">
-        <div class="cart-modal-data">
-          <div class="cart-empty" v-if="!cartList?.length">
-            <div>
-              добавьте товаров
-            </div>
-          </div>
-          <div class="cart-item" v-for="item of cartList">
-            <div class="cart-item__image-wrapper">
-              <img class="cart-item__image-wrapper__image" :src="item.img" alt="img">
-            </div>
+      <cart :visibility="isCartShow"
+            :cart-list="cartList"
+            :total-quantity="totalQuantity"
+            :total-sum="totalSum"
+            @decrease-item="decreaseItem"
+            @increase-item="increaseItem"
+            @remove-item="removeItem">
+      </cart>
 
-            <div class="cart-item__header">
-              <h3 class="cart-item__header__title" title="${this.product_name}">
-                {{item.product_name}}
-              </h3>
-              <span class="cart-item__header__price" title="${this.price}">
-                {{item.price}} $
-              </span>
-            </div>
-
-            <div class="cart-item__info">
-              <div class="price-control">
-                <button class="price-control__button price-control__button--minus "
-                        @click="decreaseItem(item.id_product)"> -
-                </button>
-                {{item.quantity}} шт.
-                <button class="price-control__button price-control__button--plus"
-                        @click="increaseItem(item.id_product)"> +
-                </button>
-                <button class="price-control__button price-control__button--delete"
-                        @click="removeItem(item.id_product)"> &#x2715
-                </button>
-              </div>
-              <p class="cart-item__info__price">
-                всего: {{item.price * item.quantity}} $
-              </p>
-            </div>
-          </div>
-
-        </div>
-        <div  v-if="cartList?.length" class="cart-modal-data-common">
-
-          <div class="cart-total">
-            <span>
-            всего: {{totalQuantity}}
-          </span>
-            <span>
-            итого: {{totalSum}} $
-          </span>
-          </div>
-        </div>
-      </div>
     </div>
   </header>
+
   <main class="main">
-    <div class="goods-list">
-      <div class="goods-item" v-for="item of itemListFiltered">
-        <h3 class="goods-item__header">{{item.product_name}}</h3>
-        <div class="goods-item__info">
-          <p class="goods-item__info__price">
-            {{item.price}} $
-          </p>
-          <p class="goods-item__info__text">
-            Lorem ipsum dolor.
-          </p>
-        </div>
-        <div class="goods-item__image-wrapper">
-          <img class="goods-item__image-wrapper__image" :src="item.img" :alt="item.product_name">
-        </div>
-        <div class="goods-item__control">
-          <button class="goods-item__control__button" @click="addItemToCart(item)">Купить</button>
-        </div>
-      </div>
-    </div>
+    <products :products="itemListFiltered"
+              @add-product="addItemToCart">
+    </products>
   </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8"></script>
-<script src="script.js"></script>
+<script src="js/SearchForm.js"></script>
+<script src="js/Cart.js"></script>
+<script src="js/Products.js"></script>
+<script src="js/main.js"></script>
 
 </body>
 </html>
