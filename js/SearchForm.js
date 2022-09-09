@@ -1,6 +1,6 @@
 const search = {
   template: `
-      <form action="#" class="search-form" @submit.prevent="filterItems()">         
+      <form action="#" class="search-form" @submit.prevent="$root.$refs.products.filterItems(filterQuery)">         
         <label for="filter"></label>
         <div class="search-form-input">
           <input id="filter" type="text" class="search-form__input" v-model="filterQuery">
@@ -17,17 +17,9 @@ const search = {
     }
   },
   methods: {
-    filterItems() {
-      if (!this.filterQuery) {
-        this.$root.$refs.products.itemListFiltered = [...this.$root.$refs.products.itemList];
-      } else {
-        const regExp = new RegExp(this.filterQuery, 'i');
-        this.$root.$refs.products.itemListFiltered = this.$root.$refs.products.itemList.filter(product => regExp.test(product.product_name));
-      }
-    },
     clearFilter() {
       this.filterQuery = '';
-      this.filterItems();
+      this.$root.$refs.products.filterItems(this.filterQuery);
     },
   }
 }

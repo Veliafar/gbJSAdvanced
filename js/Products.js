@@ -41,5 +41,15 @@ const products = {
         this.itemList = Array.from(mappedData)
         this.itemListFiltered = Array.from(mappedData);
       })
+  },
+  methods: {
+    filterItems(filterValue) {
+      if (!filterValue) {
+        this.itemListFiltered = [...this.itemList];
+      } else {
+        const regExp = new RegExp(filterValue, 'i');
+        this.itemListFiltered = this.itemList.filter(product => regExp.test(product.product_name));
+      }
+    },
   }
 }
