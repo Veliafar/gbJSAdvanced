@@ -1,8 +1,13 @@
-Vue.component('cart', {
-  props: ['visibility', 'cartList', 'totalQuantity', 'totalSum'],
-  template: `
-    {{visibility}}
-    <div class="cart-modal" v-show="visibility">
+const cart = {
+  template: `   
+   <div>
+    <button class="cart-button" type="button" @click="cartClick()">
+        Корзина
+        <span class="cart-button__count" v-if="cartList?.length">
+          {{totalQuantity}}
+        </span>
+    </button>
+    <div class="cart-modal" v-show="isCartShow">
         <div class="cart-modal-data">
           <div class="cart-empty" v-if="!cartList?.length">
             <div>
@@ -26,14 +31,14 @@ Vue.component('cart', {
             <div class="cart-item__info">
               <div class="price-control">
                 <button class="price-control__button price-control__button--minus "
-                        @click="$emit('decrease-item', item.id_product)"> -
+                        @click="decreaseItem(item.id_product)"> -
                 </button>
                 {{item.quantity}} шт.
                 <button class="price-control__button price-control__button--plus"
-                        @click="$emit('increase-item', item.id_product)"> +
+                        @click="increaseItem(item.id_product)"> +
                 </button>
                 <button class="price-control__button price-control__button--delete"
-                        @click="$emit('remove-item', item.id_product)"> &#x2715
+                        @click="removeItem(item.id_product)"> &#x2715
                 </button>
               </div>
               <p class="cart-item__info__price">
@@ -55,5 +60,85 @@ Vue.component('cart', {
           </div>
         </div>
       </div>
-  `
-})
+    </div>   
+  `,
+  data() {
+    return {
+      isCartShow: false,
+      cartURL: '/getBasket.json',
+      addFromBasketURL: '/addFromBasket.json',
+      deleteFromBasketURL: '/deleteFromBasket.json',
+      cartList: [],
+      totalQuantity: 0,
+      totalSum: 0,
+      cartImg: 'https://via.placeholder.com/40x40',
+    }
+  },
+  mounted() {
+    this.$parent.getJson(this.cartURL)
+      .then((data) => {
+        for (const item of data.contents) {
+          item.img = this.cartImg;
+          this.cartList.push(item);
+        }
+        this.mathTotal();
+      })
+  },
+  methods: {
+    mathTotal() {
+      this.totalQuantity = this.cartList.reduce((total, item) => total += item.quantity, 0);
+      this.totalSum = this.cartList.reduce((total, item) => total += item.quantity * item.price, 0);
+    },
+    addItemToCart(item) {
+      const cartItem = this.cartList.find(el => el.id_product === item.id_product);
+      if (cartItem) {
+        cartItem.quantity++;
+      } else {
+        const cartItem = {
+          ...item,
+          quantity: 1
+        };
+        cartItem.img = this.cartImg;
+        this.cartList.push(cartItem);
+      }
+      this.mathTotal();
+    },
+    deleteFromCart() {
+      return fetch(`${API_URL}${this.deleteFromBasketURL}`)
+        .then((json) => json.json())
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    removeItem(id) {
+      this.deleteFromCart()
+        .then((res) => {
+          if (res.result === 1) {
+            this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+            this.mathTotal();
+          }
+        });
+    },
+    increaseItem(id) {
+      this.cartList.find(el => el.id_product === id).quantity++;
+      this.mathTotal();
+    },
+    decreaseItem(id) {
+      this.deleteFromCart()
+        .then((res) => {
+          if (res.result === 1) {
+            const cardDataItem = this.cartList.find(el => el.id_product === id);
+            if (cardDataItem.quantity === 1) {
+              this.cartList.splice(this.cartList.findIndex(el => el.id_product === id), 1);
+            } else {
+              cardDataItem.quantity--;
+            }
+            this.mathTotal();
+          }
+        });
+    },
+    cartClick() {
+      this.isCartShow = !this.isCartShow;
+    },
+  }
+}

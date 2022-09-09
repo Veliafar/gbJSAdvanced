@@ -15,33 +15,18 @@
     </div>
     <div class="cart">
 
-      <search
-        @filter-items="filterItems"
-        @clear-filter="clearFilter">
+      <search ref="search">
       </search>
 
-      <button class="cart-button" type="button" @click="cartClick()">
-        Корзина
-        <span class="cart-button__count" v-if="cartList?.length">
-          {{totalQuantity}}
-        </span>
-      </button>
-
-      <cart :visibility="isCartShow"
-            :cart-list="cartList"
-            :total-quantity="totalQuantity"
-            :total-sum="totalSum"
-            @decrease-item="decreaseItem"
-            @increase-item="increaseItem"
-            @remove-item="removeItem">
+      <cart ref="cart">
       </cart>
 
     </div>
   </header>
 
   <main class="main">
-    <products :products="itemListFiltered"
-              @add-product="addItemToCart">
+    <products
+      ref="products">
     </products>
   </main>
 </div>
